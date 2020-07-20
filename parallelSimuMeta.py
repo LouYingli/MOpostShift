@@ -119,15 +119,25 @@ def runModel(climate,eplus_path,weather_file,eplus_file,param_value,output_file,
             data.append(param_value[j])
         
         #get output(site EUI and source EUI)
-        dfs = pd.read_html('./results/'+climate+output_file+eplus_file.split('.')[0]+'/eplustbl.htm')
-        df1 = dfs[0]
-        df2 = dfs[2]
-        site_energy = float(df1.loc[1][1])
-        source_energy = float(df1.loc[3][1])
-        area = float(df2.loc[1][1])
-        data.append(str(0.088*1000*site_energy/area)) #get site EUI(kBut/ft2-year)
-        data.append(str(0.088*1000*source_energy/area)) #get source EUI(kBut/ft2-year)
-   
+        try:
+            dfs = pd.read_html('./results/'+climate+output_file+eplus_file.split('.')[0]+'/eplustbl.htm')
+            df1 = dfs[0]
+            df2 = dfs[2]
+            site_energy1 = float(df1.loc[1][1])
+            area = float(df2.loc[1][1])
+            data.append(str(0.088055066*1000*site_energy1/area)) #get site EUI (KBtu/ft2)
+        except:
+            print('data error')
+        
+        try:
+            dfs = pd.read_html('./results/'+climate+output_file+eplus_file.split('.')[0]+'/eplustbl.htm')
+            df2 = dfs[2]
+            df3 = dfs[76]
+            site_energy2 = float(df3.loc[4][2])
+            area = float(df2.loc[1][1])
+            data.append(str(0.088055066*1000*site_energy2/area)) #get site EUI (KBtu/ft2)
+        except:
+            print('data error')
     
         #record the data in the './results/energy_data.csv'
         with open('./results/energy_data.csv', 'ab') as csvfile:
